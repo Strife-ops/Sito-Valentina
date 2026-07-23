@@ -1,39 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#f6d6e4" />
-    <title>Valentina, vuoi che smetta di volerti bene?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f6d9e5" />
+    <meta name="description" content="Un piccolo messaggio romantico per Valentina." />
+    <title>Una domanda importante per Valentina</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <div class="ambient-glow" aria-hidden="true"></div>
     <div id="floating-hearts" aria-hidden="true"></div>
+    <div id="confetti-layer" aria-hidden="true"></div>
 
     <main class="app-shell">
-      <section class="card" id="question-card">
-        <p class="eyebrow">Un piccolo messaggio per te</p>
+      <section class="question-card glass-card" id="question-card" aria-labelledby="question-text">
+        <p class="eyebrow"><span class="eyebrow-dot"></span> Una domanda importante</p>
+        <div class="tiny-heart" aria-hidden="true">♡</div>
         <h1 id="question-text">Valentina, vuoi che smetta di volerti bene?</h1>
         <p id="attempt-message" class="attempt-message" aria-live="polite"></p>
 
-        <div class="button-row">
-          <button id="yes-btn" class="btn btn-yes">Sì</button>
-          <button id="no-btn" class="btn btn-no">No ❤️</button>
+        <div class="button-row" id="button-row">
+          <button id="yes-btn" class="btn btn-yes" type="button">Sì</button>
+          <button id="no-btn" class="btn btn-no" type="button">No <span aria-hidden="true">♥</span></button>
         </div>
+        <p class="microcopy">Scegli con il cuore. È più semplice così.</p>
       </section>
 
-      <section class="final-screen hidden" id="final-screen" aria-live="polite">
+      <section class="final-screen glass-card hidden" id="final-screen" aria-live="polite" aria-labelledby="final-title">
         <div class="final-content">
-          <h2 id="final-title">Richiesta rifiutata ❤️</h2>
-          <p id="final-subtitle">Mi dispiace, Valentina… ma non posso smettere di volerti bene.</p>
+          <p class="eyebrow"><span class="eyebrow-dot"></span> La risposta del cuore</p>
+          <h2 id="final-title">Richiesta rifiutata <span aria-hidden="true">♥</span></h2>
+          <p id="final-subtitle" class="final-subtitle">Mi dispiace, Valentina… ma non posso smettere di volerti bene.</p>
           <div id="final-steps" class="final-steps"></div>
-          <div class="heart-stage">
-            <div id="big-heart">❤️</div>
-            <p id="signature-line">Daniele ❤️ Valentina</p>
+
+          <div class="heart-stage" aria-label="Daniele e Valentina insieme">
+            <div class="heart-aura" aria-hidden="true"></div>
+            <div id="big-heart" aria-hidden="true">♥</div>
+            <p id="signature-line">Daniele <span aria-hidden="true">♥</span> Valentina</p>
           </div>
-          <button id="continue-btn" class="btn btn-continue hidden">Va bene, allora continua ❤️</button>
+
+          <button id="continue-btn" class="btn btn-continue hidden" type="button">Va bene, allora continua <span aria-hidden="true">♥</span></button>
           <p id="final-message" class="final-message hidden">Con molto piacere. Ogni giorno un po’ di più.</p>
-          <p class="small-signature">Questo sito è stato creato apposta per te.</p>
+          <p id="small-signature" class="small-signature hidden">Questo sito è stato creato apposta per te.</p>
         </div>
       </section>
     </main>

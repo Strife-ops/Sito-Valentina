@@ -1,36 +1,43 @@
 # Sito romantico per Valentina
 
-Questo progetto è un piccolo sito web romantico e divertente dedicato a Valentina, realizzato con HTML, CSS e JavaScript puro.
+Un piccolo sito romantico e giocoso dedicato a Valentina. La pagina è interamente statica: non usa framework, server applicativi o dipendenze esterne.
 
-## Struttura dei file
+## File
 
-- `index.html` — struttura della pagina
-- `style.css` — tema grafico, responsive design e animazioni
-- `script.js` — configurazione, logica del pulsante “No” e sequenza finale
+- `index.html` — struttura, contenuti e accessibilità di base.
+- `style.css` — effetto vetro, palette romantica, layout responsive e animazioni.
+- `script.js` — configurazione personalizzabile, pulsante “No” che scappa e finale romantico.
 
-## Come provarlo localmente
+## Prova locale
 
-1. Apri la cartella del progetto.
-2. Avvia un semplice server statico, ad esempio:
+Apri `index.html` direttamente nel browser oppure avvia un server statico:
 
-   ```bash
-   python3 -m http.server 8000
-   ```
+```bash
+python3 -m http.server 8000
+```
 
-3. Apri nel browser l’URL:
+Poi visita <http://localhost:8000>.
 
-   ```text
-   http://localhost:8000
-   ```
+## Personalizzazione
+
+Le variabili principali sono all’inizio di `script.js`: nome della ragazza, mittente, testi, frasi del pulsante “No”, soglie dei tentativi e intensità delle animazioni.
 
 ## Pubblicazione con GitHub Pages
 
-1. Pubblica la repository su GitHub.
-2. Apri il repository su GitHub.
-3. Vai su `Settings` → `Pages`.
-4. Seleziona il branch `main` e la cartella root.
-5. Salva e attendi il completamento della pubblicazione.
+La repository prevista è `Sito-Valentina` (oppure `sito-valentina` se il nome viene normalizzato da GitHub). Dopo aver effettuato l’accesso a GitHub CLI:
 
-## Link del sito
+```bash
+gh auth login -h github.com
+gh repo create Sito-Valentina --public --source=. --remote=origin --push
+gh api -X POST repos/UTENTE/Sito-Valentina/pages -f 'source[branch]=main' -f 'source[path]=/'
+```
 
-Una volta pubblicato, il sito sarà raggiungibile al link generato da GitHub Pages.
+In alternativa, in GitHub: `Settings` → `Pages` → `Deploy from a branch` → `main` → `/ (root)`.
+
+Il link sarà:
+
+```text
+https://UTENTE.github.io/Sito-Valentina/
+```
+
+Sostituisci `UTENTE` con il tuo nome GitHub. Non sono presenti suoni né richieste a servizi esterni.
