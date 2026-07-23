@@ -1,12 +1,14 @@
 # Sito romantico per Valentina
 
-Un piccolo sito romantico e giocoso dedicato a Valentina. La pagina è interamente statica: non usa framework, server applicativi o dipendenze esterne.
+Un piccolo sito romantico e giocoso dedicato a Valentina: l’appuntamento di domani sera è confermato. La pagina è interamente statica: non usa framework, server applicativi o dipendenze esterne.
 
 ## File
 
 - `index.html` — struttura, contenuti e accessibilità di base.
 - `style.css` — effetto vetro, palette romantica, layout responsive e animazioni.
-- `script.js` — configurazione personalizzabile, pulsante “No” che scappa e finale romantico.
+- `script.js` — configurazione personalizzabile, movimento fluido del pulsante “No” e finali romantici.
+
+Il pulsante “No ❤️” parte affiancato a “Sì” e si sposta soltanto quando ci si avvicina o si prova a premerlo. Il primo movimento conserva la posizione iniziale, poi il pulsante scappa con una transizione di circa 340 ms e un cooldown per evitare movimenti caotici. Se viene comunque premuto, mostra “Perfetto ❤️”; anche “Sì” porta a un finale positivo e divertente.
 
 ## Prova locale
 

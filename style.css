@@ -61,7 +61,7 @@ h1 { max-width: 620px; margin: 0 auto; font-size: clamp(2.25rem, 7vw, 4.55rem); 
 .btn:hover, .btn:focus-visible { transform: translateY(-3px); filter: brightness(1.04); box-shadow: 0 16px 28px rgba(93, 24, 66, .22); outline: none; }
 .btn:focus-visible { box-shadow: 0 0 0 4px rgba(217, 75, 125, .25), 0 16px 28px rgba(93, 24, 66, .22); }
 .btn-yes { min-width: 122px; background: linear-gradient(135deg, #df638e, var(--pink-dark)); }
-.btn-no { min-width: 122px; background: linear-gradient(135deg, #9160bb, #66336f); white-space: nowrap; z-index: 4; }
+.btn-no { min-width: 122px; background: linear-gradient(135deg, #9160bb, #66336f); white-space: nowrap; z-index: 4; transition: left 340ms cubic-bezier(.2, .8, .25, 1), top 340ms cubic-bezier(.2, .8, .25, 1), transform 340ms cubic-bezier(.2, .8, .25, 1), filter .2s ease, box-shadow .2s ease; }
 .microcopy { margin: 28px 0 0; color: var(--muted); font-size: .78rem; letter-spacing: .02em; }
 .hidden { display: none !important; }
 
@@ -79,7 +79,6 @@ h2 span { font-family: system-ui, sans-serif; font-size: .7em; }
 #big-heart { position: relative; color: #dc4c80; font-family: Georgia, serif; font-size: clamp(5.6rem, 18vw, 8.4rem); line-height: .8; filter: drop-shadow(0 14px 18px rgba(179, 43, 96, .23)); animation: heartbeat 1.25s ease-in-out infinite; }
 #signature-line { margin: 17px 0 0; font-family: Georgia, serif; font-size: clamp(1.25rem, 4vw, 1.8rem); }
 #signature-line span { color: var(--pink); font-family: system-ui, sans-serif; }
-.btn-continue { margin-top: 17px; background: linear-gradient(135deg, #e66091, #aa52b0); }
 .final-message { margin: 22px 0 0; color: var(--pink-dark); font-family: Georgia, serif; font-size: clamp(1.35rem, 4vw, 2rem); font-weight: 600; animation: appear .7s ease both; }
 .small-signature { margin: 28px 0 0; color: var(--muted); font-size: .83rem; letter-spacing: .03em; animation: appear .7s ease both; }
 

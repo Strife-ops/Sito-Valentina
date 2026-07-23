@@ -2,16 +2,22 @@
 const config = {
   girlName: 'Valentina',
   senderName: 'Daniele',
-  initialQuestion: 'Valentina, vuoi che smetta di volerti bene?',
-  mainMessage: 'Mi dispiace, Valentina… ma non posso smettere di volerti bene.',
-  finalMessage: 'Con molto piacere. Ogni giorno un po’ di più.',
+  initialQuestion: 'Valentina, vuoi saltare il nostro appuntamento di domani sera?',
+  noButtonText: 'No ❤️',
   noPhrases: [
-    'Non riesci a prendermi!', 'Questa è la risposta giusta, però…', 'Dai, riprova 😜',
-    'Troppo lenta!', 'Valentinaaaa!', 'Questo pulsante è timido', 'Quasi!',
-    'Non voglio farmi premere', 'Sei sicura di riuscirci?', 'Il No è fuori servizio ❤️'
+    'Quasi!', 'Devi prendermi!', 'Risposta giusta, ma difficile', 'Non scappo… forse',
+    'Domani è confermato ❤️', 'Troppo lenta!', 'Valentina, concentrati!', 'Il No è timido',
+    'Ci sei quasi', 'Non mi prenderai così'
   ],
-  tryThresholds: { hint: 4, tiny: 7, vanish: 10 },
-  animation: { moveDuration: 180, safePadding: 18, escapeDistance: 142, shrinkAfter: 7, shrinkStep: .035 }
+  animation: {
+    moveDuration: 340,
+    cooldown: 320,
+    safePadding: 18,
+    escapeDistance: 128,
+    phraseDuration: 1450,
+    shrinkAfter: 8,
+    shrinkStep: 0.025
+  }
 };
 
 const $ = (id) => document.getElementById(id);
@@ -22,7 +28,6 @@ const finalScreen = $('final-screen');
 const finalTitle = $('final-title');
 const finalSubtitle = $('final-subtitle');
 const finalSteps = $('final-steps');
-const continueButton = $('continue-btn');
 const finalMessage = $('final-message');
 const smallSignature = $('small-signature');
 const questionText = $('question-text');
@@ -33,21 +38,28 @@ const signatureLine = $('signature-line');
 
 let attempts = 0;
 let finished = false;
-let moveTimer;
+let hasEscaped = false;
+let lastMoveAt = -Infinity;
+let phraseTimer;
 let heartTimer;
 let confettiTimer;
 
 function initText() {
   questionText.textContent = config.initialQuestion;
-  finalSubtitle.textContent = config.mainMessage.replace(/Valentina/g, config.girlName);
-  finalMessage.textContent = config.finalMessage;
   signatureLine.innerHTML = `${config.senderName} <span aria-hidden="true">♥</span> ${config.girlName}`;
+  noButton.textContent = config.noButtonText;
 }
 
-function randomBetween(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randomBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 function overlaps(rectA, rectB, gap = 0) {
   return rectA.left < rectB.right + gap && rectA.right > rectB.left - gap && rectA.top < rectB.bottom + gap && rectA.bottom > rectB.top - gap;
+}
+
+function rectFromPosition(x, y, width, height) {
+  return { left: x, top: y, right: x + width, bottom: y + height };
 }
 
 function findEscapePosition() {
@@ -59,69 +71,99 @@ function findEscapePosition() {
   const maxX = Math.max(pad, window.innerWidth - width - pad);
   const maxY = Math.max(pad, window.innerHeight - height - pad);
 
-  for (let tries = 0; tries < 90; tries += 1) {
+  for (let tries = 0; tries < 100; tries += 1) {
     const x = randomBetween(pad, maxX);
     const y = randomBetween(pad, maxY);
-    const candidate = { left: x, top: y, right: x + width, bottom: y + height };
-    // Keep the escape button away from both the affirmative button and the question card.
-    if (!overlaps(candidate, yesRect, 58) && !overlaps(candidate, cardRect, 12)) return { x, y };
+    const candidate = rectFromPosition(x, y, width, height);
+
+    // The new spot avoids both the friendly button and the question card.
+    if (!overlaps(candidate, yesRect, 64) && !overlaps(candidate, cardRect, 12)) return { x, y };
   }
 
-  // Small screens can run out of free space: choose the farthest corner available.
-  const corners = [{ x: pad, y: pad }, { x: maxX, y: pad }, { x: pad, y: maxY }, { x: maxX, y: maxY }];
-  return corners.sort((a, b) => Math.hypot(b.x - yesRect.left, b.y - yesRect.top) - Math.hypot(a.x - yesRect.left, a.y - yesRect.top))[0];
+  // On a very small screen there may be no completely free area. Keep the
+  // button in a visible corner and still prefer one away from “Sì”.
+  const corners = [
+    { x: pad, y: pad },
+    { x: maxX, y: pad },
+    { x: pad, y: maxY },
+    { x: maxX, y: maxY }
+  ];
+  return corners
+    .sort((a, b) => Math.hypot(b.x - yesRect.left, b.y - yesRect.top) - Math.hypot(a.x - yesRect.left, a.y - yesRect.top))
+    .find(({ x, y }) => !overlaps(rectFromPosition(x, y, width, height), yesRect, 18)) || corners[0];
+}
+
+function promoteToViewportPosition() {
+  if (hasEscaped) return;
+  const rect = noButton.getBoundingClientRect();
+  // Preserve the exact initial visual position when switching from the
+  // normal flex layout to a viewport-positioned button.
+  noButton.style.transition = 'none';
+  noButton.style.position = 'fixed';
+  noButton.style.left = `${rect.left}px`;
+  noButton.style.top = `${rect.top}px`;
+  noButton.style.margin = '0';
+  hasEscaped = true;
+  void noButton.offsetWidth;
+  noButton.style.transition = '';
 }
 
 function moveNoButton() {
   const { x, y } = findEscapePosition();
-  noButton.style.position = 'fixed';
+  const shrink = Math.max(0.78, 1 - Math.max(0, attempts - config.animation.shrinkAfter) * config.animation.shrinkStep);
   noButton.style.left = `${x}px`;
   noButton.style.top = `${y}px`;
-  noButton.style.transitionDuration = `${config.animation.moveDuration}ms`;
-  noButton.style.transform = `rotate(${randomBetween(-10, 10)}deg) scale(${Math.max(.7, 1 - Math.max(0, attempts - config.animation.shrinkAfter) * config.animation.shrinkStep)})`;
+  noButton.style.transform = `rotate(${randomBetween(-8, 8)}deg) scale(${shrink})`;
 }
 
-function updateAttemptFeedback() {
-  if (attempts >= config.tryThresholds.hint) attemptMessage.textContent = 'Mi sa che questo No non vuole proprio farsi premere…';
-}
-
-function makeNoButtonDodge() {
-  if (finished) return;
-  attempts += 1;
-  updateAttemptFeedback();
+function showTemporaryPhrase() {
   noButton.textContent = config.noPhrases[Math.floor(Math.random() * config.noPhrases.length)];
-  noButton.style.opacity = '1';
-  noButton.style.visibility = 'visible';
-  moveNoButton();
+  clearTimeout(phraseTimer);
+  phraseTimer = setTimeout(() => {
+    if (!finished) noButton.textContent = config.noButtonText;
+  }, config.animation.phraseDuration);
+}
 
-  if (attempts > config.tryThresholds.vanish) {
-    clearTimeout(moveTimer);
-    noButton.style.opacity = '.14';
-    moveTimer = setTimeout(() => {
-      noButton.style.visibility = 'hidden';
-      moveTimer = setTimeout(() => {
-        if (finished) return;
-        noButton.style.visibility = 'visible';
-        noButton.style.opacity = '1';
-        moveNoButton();
-      }, 120);
-    }, 120);
-  }
+function dodgeNoButton() {
+  if (finished) return false;
+  const now = performance.now();
+  if (now - lastMoveAt < config.animation.cooldown) return false;
+
+  lastMoveAt = now;
+  attempts += 1;
+  if (attempts >= 4) attemptMessage.textContent = 'Mi sa che questo No vuole proprio farsi desiderare…';
+  promoteToViewportPosition();
+  showTemporaryPhrase();
+  moveNoButton();
+  return true;
 }
 
 function pointerIsClose(event) {
-  const rect = noButton.getBoundingClientRect();
-  return Math.hypot(event.clientX - (rect.left + rect.width / 2), event.clientY - (rect.top + rect.height / 2)) < Math.max(config.animation.escapeDistance, rect.width * 1.8);
+  if (!hasEscaped && !noButton.matches(':hover') && event.type === 'pointermove') {
+    const rect = noButton.getBoundingClientRect();
+    return Math.hypot(event.clientX - (rect.left + rect.width / 2), event.clientY - (rect.top + rect.height / 2)) < config.animation.escapeDistance;
+  }
+  return true;
 }
 
 function handlePointerMove(event) {
-  if (!finished && pointerIsClose(event)) makeNoButtonDodge();
+  if (!finished && pointerIsClose(event)) dodgeNoButton();
+}
+
+function keepEscapedButtonInsideViewport() {
+  if (!hasEscaped || finished) return;
+  const pad = config.animation.safePadding;
+  const rect = noButton.getBoundingClientRect();
+  const x = Math.min(Math.max(pad, rect.left), Math.max(pad, window.innerWidth - rect.width - pad));
+  const y = Math.min(Math.max(pad, rect.top), Math.max(pad, window.innerHeight - rect.height - pad));
+  noButton.style.left = `${x}px`;
+  noButton.style.top = `${y}px`;
 }
 
 function spawnHeart() {
   const heart = document.createElement('span');
   heart.className = 'heart';
-  heart.textContent = Math.random() > .28 ? '♥' : '♡';
+  heart.textContent = Math.random() > 0.28 ? '♥' : '♡';
   heart.style.left = `${Math.random() * 100}vw`;
   heart.style.top = `${72 + Math.random() * 35}vh`;
   heart.style.fontSize = `${12 + Math.random() * 16}px`;
@@ -137,68 +179,69 @@ function spawnConfetti() {
     piece.style.left = `${Math.random() * 100}vw`;
     piece.style.background = ['#dc4c80', '#a76bd0', '#f4a5bf', '#f6c56e'][randomBetween(0, 3)];
     piece.style.animationDuration = `${2.2 + Math.random() * 1.5}s`;
-    piece.style.animationDelay = `${Math.random() * .35}s`;
+    piece.style.animationDelay = `${Math.random() * 0.35}s`;
     confettiLayer.appendChild(piece);
     setTimeout(() => piece.remove(), 4300);
   }
 }
 
-function startRomanticSequence(isEasterEgg = false) {
+function revealLine(text, delay) {
+  setTimeout(() => {
+    const paragraph = document.createElement('p');
+    paragraph.className = 'line';
+    paragraph.textContent = text;
+    finalSteps.appendChild(paragraph);
+    requestAnimationFrame(() => paragraph.classList.add('show'));
+  }, delay);
+}
+
+function startRomanticSequence(answer) {
   if (finished) return;
   finished = true;
-  clearTimeout(moveTimer);
+  clearTimeout(phraseTimer);
   questionCard.classList.add('hidden');
   finalScreen.classList.remove('hidden');
   document.body.classList.add('romantic-mode');
+  finalSteps.innerHTML = '';
+  finalMessage.classList.add('hidden');
+  smallSignature.classList.add('hidden');
 
-  if (isEasterEgg) {
-    finalTitle.textContent = 'Non so come tu abbia fatto a prenderlo…';
-    finalSubtitle.textContent = 'Ma la tua risposta è stata registrata: non vuoi che smetta di volerti bene ❤️';
+  if (answer === 'no') {
+    finalTitle.innerHTML = 'Perfetto <span aria-hidden="true">♥</span>';
+    finalSubtitle.textContent = 'Allora l’appuntamento di domani sera è confermato.';
+    finalMessage.textContent = 'Non vedevo l’ora.';
+    revealLine('Ci vediamo domani sera ❤️', 850);
+  } else {
+    finalTitle.innerHTML = 'Risposta non accettata <span aria-hidden="true">♥</span>';
+    finalSubtitle.textContent = 'Mi dispiace, Valentina, ma non puoi annullare l’appuntamento.';
+    finalMessage.textContent = 'E sarà bellissimo.';
+    revealLine('Domani sera ci vediamo lo stesso.', 850);
   }
 
-  for (let index = 0; index < 32; index += 1) setTimeout(spawnHeart, index * 80);
-  heartTimer = setInterval(spawnHeart, 480);
-  confettiTimer = setInterval(spawnConfetti, 1250);
+  for (let index = 0; index < 30; index += 1) setTimeout(spawnHeart, index * 85);
+  heartTimer = setInterval(spawnHeart, 520);
+  confettiTimer = setInterval(spawnConfetti, 1400);
   spawnConfetti();
 
-  ['Ci hai provato…', 'Ma ormai è troppo tardi.', 'Ti voglio troppo bene ❤️'].forEach((line, index) => {
-    setTimeout(() => {
-      const paragraph = document.createElement('p');
-      paragraph.className = 'line';
-      paragraph.textContent = line;
-      finalSteps.appendChild(paragraph);
-      requestAnimationFrame(() => paragraph.classList.add('show'));
-    }, 800 + index * 1050);
-  });
-
-  setTimeout(() => continueButton.classList.remove('hidden'), 3900);
+  setTimeout(() => {
+    finalMessage.classList.remove('hidden');
+    smallSignature.classList.remove('hidden');
+  }, 2050);
 }
 
-function finishWithExtraLove() {
-  continueButton.classList.add('hidden');
-  finalMessage.classList.remove('hidden');
-  smallSignature.classList.remove('hidden');
-  for (let index = 0; index < 22; index += 1) setTimeout(spawnHeart, index * 90);
-  spawnConfetti();
-  clearInterval(confettiTimer);
-  clearInterval(heartTimer);
-}
-
-// A wider pointer zone makes the dodge work on touch screens before the button receives the tap.
+// The initial layout is intentionally untouched. The first dodge promotes
+// the button to fixed positioning while preserving its original coordinates.
 window.addEventListener('pointermove', handlePointerMove, { passive: true });
-noButton.addEventListener('pointerenter', makeNoButtonDodge);
-noButton.addEventListener('pointerdown', (event) => {
-  event.preventDefault();
-  makeNoButtonDodge();
-});
+noButton.addEventListener('pointerenter', () => dodgeNoButton());
+noButton.addEventListener('mouseenter', () => dodgeNoButton());
+noButton.addEventListener('pointerdown', () => dodgeNoButton());
+noButton.addEventListener('touchstart', () => dodgeNoButton(), { passive: true });
 noButton.addEventListener('click', (event) => {
   event.preventDefault();
-  startRomanticSequence(true);
+  startRomanticSequence('no');
 });
-yesButton.addEventListener('click', () => startRomanticSequence(false));
-continueButton.addEventListener('click', finishWithExtraLove);
-window.addEventListener('resize', () => { if (!finished) moveNoButton(); });
-window.addEventListener('orientationchange', () => setTimeout(() => { if (!finished) moveNoButton(); }, 100));
+yesButton.addEventListener('click', () => startRomanticSequence('yes'));
+window.addEventListener('resize', keepEscapedButtonInsideViewport);
+window.addEventListener('orientationchange', () => setTimeout(keepEscapedButtonInsideViewport, 100));
 
 initText();
-requestAnimationFrame(moveNoButton);
