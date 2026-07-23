@@ -1,0 +1,301 @@
+:root {
+  --bg1: #fce8f3;
+  --bg2: #f7d8ef;
+  --bg3: #f4c4d9;
+  --card: rgba(255, 255, 255, 0.4);
+  --border: rgba(255, 255, 255, 0.55);
+  --text: #59213d;
+  --accent: #d95587;
+  --accent-2: #8b4af3;
+  --shadow: 0 20px 50px rgba(142, 51, 94, 0.18);
+  --button-yes: #d95587;
+  --button-no: #9736a3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  overflow: hidden;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.85), transparent 40%),
+    linear-gradient(135deg, var(--bg1), var(--bg2) 45%, var(--bg3));
+  color: var(--text);
+  transition: background 1.4s ease;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.45), transparent 18%),
+    radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.3), transparent 12%),
+    radial-gradient(circle at 60% 86%, rgba(255, 255, 255, 0.35), transparent 18%);
+}
+
+.app-shell {
+  width: min(100%, 720px);
+  position: relative;
+  z-index: 1;
+}
+
+.card,
+.final-screen {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  padding: 26px;
+}
+
+.card {
+  position: relative;
+  text-align: center;
+  animation: pop-in 0.8s ease;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.78rem;
+  opacity: 0.72;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.9rem, 4vw, 3.25rem);
+  line-height: 1.18;
+}
+
+.attempt-message {
+  min-height: 1.5em;
+  margin: 14px 0 0;
+  font-size: 0.98rem;
+  color: #7f365f;
+  font-weight: 600;
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  position: relative;
+}
+
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 14px 24px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 10px 20px rgba(73, 18, 47, 0.2);
+  transition: transform 0.18s ease, filter 0.18s ease, opacity 0.18s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.05);
+}
+
+.btn-yes {
+  background: linear-gradient(135deg, #da5f8f, #d12f78);
+}
+
+.btn-no {
+  background: linear-gradient(135deg, #8f49d1, #552e86);
+  position: relative;
+  z-index: 2;
+}
+
+.btn-continue {
+  margin: 20px auto 0;
+  background: linear-gradient(135deg, #ef4e92, #a33fba);
+}
+
+.hidden {
+  display: none;
+}
+
+.final-screen {
+  position: absolute;
+  inset: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.final-content {
+  width: min(100%, 760px);
+  text-align: center;
+  padding: 8px;
+}
+
+.final-content h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4.4vw, 3.5rem);
+}
+
+.final-content p {
+  margin: 14px 0;
+  font-size: clamp(1rem, 2vw, 1.35rem);
+}
+
+.final-steps {
+  min-height: 90px;
+}
+
+.final-steps .line {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.6s ease;
+}
+
+.final-steps .line.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.heart-stage {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+}
+
+#big-heart {
+  font-size: clamp(4rem, 13vw, 7rem);
+  animation: pulse-heart 1.2s infinite alternate;
+  filter: drop-shadow(0 14px 20px rgba(201, 12, 72, 0.32));
+}
+
+#signature-line {
+  font-size: clamp(1.15rem, 3.2vw, 1.8rem);
+  font-weight: 700;
+}
+
+.final-message {
+  font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  margin-top: 18px;
+  color: #6b2147;
+  font-weight: 700;
+}
+
+.small-signature {
+  margin-top: 24px;
+  font-size: 0.98rem;
+  opacity: 0.75;
+}
+
+#floating-hearts {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.heart {
+  position: absolute;
+  font-size: 20px;
+  color: rgba(220, 50, 95, 0.8);
+  animation: float-up linear forwards;
+  user-select: none;
+}
+
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  opacity: 0.9;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulse-heart {
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes float-up {
+  from {
+    transform: translateY(65vh) scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(-15vh) scale(1.2) rotate(15deg);
+    opacity: 1;
+  }
+}
+
+@keyframes confettiFall {
+  from {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 0.95;
+  }
+  to {
+    transform: translateY(105vh) rotate(300deg);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 12px;
+  }
+
+  .card,
+  .final-screen {
+    padding: 20px 16px;
+    border-radius: 22px;
+  }
+
+  .button-row {
+    gap: 12px;
+  }
+
+  .btn {
+    min-width: 120px;
+    padding: 13px 20px;
+  }
+}
