@@ -1,6 +1,6 @@
 # Sito romantico per Valentina
 
-Un piccolo sito romantico e giocoso dedicato a Valentina: l’appuntamento di domani sera è confermato. La pagina è interamente statica: non usa framework, server applicativi o dipendenze esterne.
+Un piccolo sito romantico e giocoso dedicato a Valentina, costruito attorno alla domanda: “Valentina, ammetti che la timidona è soltanto una copertura?”. La pagina è interamente statica: non usa framework, server applicativi o dipendenze esterne.
 
 ## File
 
@@ -8,7 +8,9 @@ Un piccolo sito romantico e giocoso dedicato a Valentina: l’appuntamento di do
 - `style.css` — effetto vetro, palette romantica, layout responsive e animazioni.
 - `script.js` — configurazione personalizzabile, movimento fluido del pulsante “No” e finali romantici.
 
-Il pulsante “No ❤️” parte affiancato a “Sì” e si sposta soltanto quando ci si avvicina o si prova a premerlo. Il primo movimento conserva la posizione iniziale, poi il pulsante scappa con una transizione di circa 340 ms e un cooldown per evitare movimenti caotici. Se viene comunque premuto, mostra “Perfetto ❤️”; anche “Sì” porta a un finale positivo e divertente.
+Il pulsante “No, assolutamente!” parte affiancato a “Sì 😏” e si sposta soltanto quando ci si avvicina o si prova a premerlo. Il primo movimento conserva la posizione iniziale, poi il pulsante scappa in direzione opposta al puntatore con transizioni tra 300 e 500 ms e un cooldown per evitare movimenti caotici. Dopo alcuni tentativi compaiono messaggi progressivi senza spostare il layout.
+
+La maggior parte delle fughe è fluida; più raramente vengono aggiunti una curva, un rimbalzo, una rotazione, una riduzione graduale o una breve sparizione di circa 220–320 ms. Se il pulsante viene comunque premuto, compare “Risposta sospetta…” con la possibilità di ripresentare la domanda. Premendo “Sì 😏” parte la rivelazione romantica con cuori, coriandoli e i messaggi finali personalizzati.
 
 ## Prova locale
 
