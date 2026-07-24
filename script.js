@@ -17,8 +17,8 @@ const config = {
     { after: 15, text: 'Il tuo ciccino aveva già capito tutto.' }
   ],
   animation: {
-    moveDuration: 500,
-    cooldown: 650,
+    moveDuration: 620,
+    cooldown: 900,
     safePadding: 18,
     activationDistance: 170,
     phraseDuration: 1100,
@@ -37,6 +37,7 @@ const $ = (id) => document.getElementById(id);
 const noButton = $('no-btn');
 const yesButton = $('yes-btn');
 const questionCard = $('question-card');
+const buttonRow = $('button-row');
 const finalScreen = $('final-screen');
 const finalTitle = $('final-title');
 const finalSubtitle = $('final-subtitle');
@@ -198,10 +199,14 @@ function promoteToViewportPosition() {
   // The initial flex position is measured first, then preserved exactly while
   // the element changes to fixed positioning for all subsequent escapes.
   noButton.style.transition = 'none';
+  document.body.appendChild(noButton);
   noButton.style.position = 'fixed';
   noButton.style.left = `${rect.left}px`;
   noButton.style.top = `${rect.top}px`;
   noButton.style.margin = '0';
+  noButton.style.zIndex = '20';
+  noButton.style.opacity = '1';
+  noButton.style.visibility = 'visible';
   hasEscaped = true;
   void noButton.offsetWidth;
   noButton.style.transition = '';
@@ -217,7 +222,7 @@ function pickEffect() {
 
 function applyMove(target, effect) {
   const shrink = Math.max(0.78, 1 - Math.max(0, attempts - config.animation.shrinkAfter) * config.animation.shrinkStep);
-  const duration = effect === 'bounce' ? 460 : effect === 'curve' ? 540 : config.animation.moveDuration;
+  const duration = effect === 'bounce' ? 560 : effect === 'curve' ? 700 : config.animation.moveDuration;
   const rotation = effect === 'curve' ? randomBetween(-12, 12) : randomBetween(-6, 6);
   const scale = effect === 'shrink' ? shrink * 0.9 : shrink;
 
@@ -256,7 +261,7 @@ function dodgeNoButton(event) {
   applyMove(target, effect);
   // Do not allow another pointer event to queue a second escape while this
   // one is still visible and moving. This is what makes the motion readable.
-  setTimeout(() => { moveInProgress = false; }, config.animation.moveDuration + 100);
+  setTimeout(() => { moveInProgress = false; }, config.animation.moveDuration + 180);
   return true;
 }
 
@@ -389,7 +394,9 @@ function resetQuestion() {
   noButton.style.transitionTimingFunction = '';
   noButton.style.animation = '';
   noButton.style.boxShadow = '';
+  noButton.style.zIndex = '';
   noButton.textContent = config.noButtonText;
+  buttonRow.appendChild(noButton);
   attemptMessage.textContent = '';
   attemptMessage.classList.remove('visible');
   floatingHearts.innerHTML = '';
@@ -403,8 +410,6 @@ function resetQuestion() {
 // normal button position, promotes it to fixed and only then animates away.
 window.addEventListener('pointermove', handlePointerMove, { passive: true });
 noButton.addEventListener('pointerenter', (event) => dodgeNoButton(event));
-noButton.addEventListener('mouseenter', (event) => dodgeNoButton(event));
-noButton.addEventListener('mouseover', (event) => dodgeNoButton(event));
 noButton.addEventListener('pointerdown', (event) => {
   // Cancel the native mouse/touch activation: the button should escape before
   // a physical tap can turn into a click.
