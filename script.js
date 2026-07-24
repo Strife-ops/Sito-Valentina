@@ -132,9 +132,9 @@ function updateAttemptMessage() {
   }, 80);
 }
 
-function candidateIsSafe(candidate, yesRect, cardRect, width, height, gap = 0) {
+function candidateIsSafe(candidate, protectedRects, width, height, gap = 0) {
   const candidateRect = rectFromPosition(candidate.x, candidate.y, width, height);
-  return !overlaps(candidateRect, yesRect, gap) && !overlaps(candidateRect, cardRect, 10);
+  return protectedRects.every((protectedRect) => !overlaps(candidateRect, protectedRect, gap));
 }
 
 function findSafePosition(pointer) {
@@ -144,7 +144,7 @@ function findSafePosition(pointer) {
   const maxX = Math.max(pad, window.innerWidth - width - pad);
   const maxY = Math.max(pad, window.innerHeight - height - pad);
   const yesRect = yesButton.getBoundingClientRect();
-  const cardRect = questionCard.getBoundingClientRect();
+  const protectedRects = [yesRect, questionText.getBoundingClientRect(), attemptMessage.getBoundingClientRect()];
   const currentRect = noButton.getBoundingClientRect();
   const current = { x: currentRect.left + currentRect.width / 2, y: currentRect.top + currentRect.height / 2 };
   const targetPointer = pointer || { x: current.x, y: current.y };
@@ -154,7 +154,9 @@ function findSafePosition(pointer) {
   awayX /= awayLength;
   awayY /= awayLength;
   const perpendicular = { x: -awayY, y: awayX };
-  const travel = Math.min(390, 160 + attempts * 15);
+  // Keep every destination close enough to read as a smooth escape rather
+  // than a teleport to a random corner of the screen.
+  const travel = Math.min(190, 120 + attempts * 8);
   const candidates = [];
 
   // First try the direction opposite to the pointer, then add curved and
@@ -163,17 +165,12 @@ function findSafePosition(pointer) {
     const angleOffset = index === 0 ? 0 : (Math.random() - 0.5) * 1.35;
     const directionX = awayX * Math.cos(angleOffset) + perpendicular.x * Math.sin(angleOffset);
     const directionY = awayY * Math.cos(angleOffset) + perpendicular.y * Math.sin(angleOffset);
-    const extraDistance = index === 0 ? travel : travel * (0.72 + Math.random() * 0.55);
-    const rawX = currentRect.left + directionX * extraDistance + (Math.random() - 0.5) * 90;
-    const rawY = currentRect.top + directionY * extraDistance + (Math.random() - 0.5) * 90;
+    const extraDistance = index === 0 ? travel : travel * (0.78 + Math.random() * 0.28);
+    const rawX = currentRect.left + directionX * extraDistance + (Math.random() - 0.5) * 42;
+    const rawY = currentRect.top + directionY * extraDistance + (Math.random() - 0.5) * 42;
     const candidate = { x: clamp(rawX, pad, maxX), y: clamp(rawY, pad, maxY) };
-    if (candidateIsSafe(candidate, yesRect, cardRect, width, height, 58)) candidates.push(candidate);
-  }
-
-  // Add a few viewport-wide options for later attempts and compact screens.
-  for (let index = 0; index < 42; index += 1) {
-    const candidate = { x: randomBetween(pad, maxX), y: randomBetween(pad, maxY) };
-    if (candidateIsSafe(candidate, yesRect, cardRect, width, height, 58)) candidates.push(candidate);
+    const candidateCenter = { x: candidate.x + width / 2, y: candidate.y + height / 2 };
+    if (distanceBetween(candidateCenter, current) > 54 && candidateIsSafe(candidate, protectedRects, width, height, 34)) candidates.push(candidate);
   }
 
   if (candidates.length > 0) {
