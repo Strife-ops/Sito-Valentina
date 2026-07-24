@@ -8,9 +8,9 @@ Un piccolo sito romantico e giocoso dedicato a Valentina, costruito attorno alla
 - `style.css` — effetto vetro, palette romantica, layout responsive e animazioni.
 - `script.js` — configurazione personalizzabile, movimento fluido del pulsante “No” e finali romantici.
 
-Il pulsante “No, assolutamente!” parte affiancato a “Sì 😏” e si sposta soltanto quando ci si avvicina o si prova a premerlo. Il primo movimento conserva la posizione iniziale, poi il pulsante scappa in direzione opposta al puntatore con transizioni tra 300 e 500 ms e un cooldown per evitare movimenti caotici. Dopo alcuni tentativi compaiono messaggi progressivi senza spostare il layout.
+Il pulsante “No, assolutamente!” parte affiancato a “Sì 😏” e si sposta soltanto quando ci si avvicina o si prova a premerlo. Il primo movimento conserva la posizione iniziale, poi il pulsante scappa in direzione opposta al puntatore con transizioni tra 460 e 540 ms e un cooldown di 650 ms per evitare movimenti caotici. Durante ogni fuga resta sempre visibile e non accetta il click del mouse o del touchscreen prima di essersi spostato. Dopo alcuni tentativi compaiono messaggi progressivi senza spostare il layout.
 
-La maggior parte delle fughe è fluida; più raramente vengono aggiunti una curva, un rimbalzo, una rotazione, una riduzione graduale o una breve sparizione di circa 220–320 ms. Se il pulsante viene comunque premuto, compare “Risposta sospetta…” con la possibilità di ripresentare la domanda. Premendo “Sì 😏” parte la rivelazione romantica con cuori, coriandoli e i messaggi finali personalizzati.
+La maggior parte delle fughe è fluida; più raramente vengono aggiunti una curva, un rimbalzo, una rotazione, un’ombra dinamica o una riduzione graduale. Non viene più usata la sparizione: l’effetto principale deve rimanere leggibile e il pulsante deve restare sullo schermo. Se il pulsante viene comunque attivato da tastiera, compare “Risposta sospetta…” con la possibilità di ripresentare la domanda. Premendo “Sì 😏” parte la rivelazione romantica con cuori, coriandoli e i messaggi finali personalizzati.
 
 ## Prova locale
 

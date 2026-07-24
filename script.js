@@ -17,18 +17,19 @@ const config = {
     { after: 15, text: 'Il tuo ciccino aveva già capito tutto.' }
   ],
   animation: {
-    moveDuration: 420,
-    cooldown: 380,
+    moveDuration: 500,
+    cooldown: 650,
     safePadding: 18,
-    activationDistance: 132,
+    activationDistance: 170,
     phraseDuration: 1100,
     shrinkAfter: 11,
     shrinkStep: 0.018
   },
   effects: {
     normalShare: 0.70,
-    secondaryShare: 0.18,
-    rareDisappearChance: 0.12
+    curveShare: 0.12,
+    bounceShare: 0.10,
+    shrinkShare: 0.08
   }
 };
 
@@ -56,12 +57,12 @@ let finished = false;
 let hasEscaped = false;
 let specialEffectRunning = false;
 let lastMoveAt = -Infinity;
+let moveInProgress = false;
 let phraseTimer;
 let heartTimer;
 let confettiTimer;
 let sequenceStopTimer;
 let scheduledTimers = [];
-let effectTimers = [];
 
 function initText() {
   questionText.textContent = config.question;
@@ -110,12 +111,11 @@ function clearAllTimers() {
   clearInterval(heartTimer);
   clearInterval(confettiTimer);
   scheduledTimers.forEach((timer) => clearTimeout(timer));
-  effectTimers.forEach((timer) => clearTimeout(timer));
   scheduledTimers = [];
-  effectTimers = [];
   heartTimer = undefined;
   confettiTimer = undefined;
   specialEffectRunning = false;
+  moveInProgress = false;
 }
 
 function updateAttemptMessage() {
@@ -209,16 +209,15 @@ function promoteToViewportPosition() {
 
 function pickEffect() {
   const roll = Math.random();
-  const vanishStart = 1 - config.effects.rareDisappearChance;
-  if (roll >= vanishStart) return 'vanish';
   if (roll < config.effects.normalShare) return 'normal';
-  if (roll < config.effects.normalShare + config.effects.secondaryShare) return ['curve', 'bounce', 'shrink'][randomBetween(0, 2)];
-  return 'normal';
+  if (roll < config.effects.normalShare + config.effects.curveShare) return 'curve';
+  if (roll < config.effects.normalShare + config.effects.curveShare + config.effects.bounceShare) return 'bounce';
+  return 'shrink';
 }
 
 function applyMove(target, effect) {
   const shrink = Math.max(0.78, 1 - Math.max(0, attempts - config.animation.shrinkAfter) * config.animation.shrinkStep);
-  const duration = effect === 'bounce' ? 300 : effect === 'curve' ? 500 : effect === 'vanish' ? 430 : config.animation.moveDuration;
+  const duration = effect === 'bounce' ? 460 : effect === 'curve' ? 540 : config.animation.moveDuration;
   const rotation = effect === 'curve' ? randomBetween(-12, 12) : randomBetween(-6, 6);
   const scale = effect === 'shrink' ? shrink * 0.9 : shrink;
 
@@ -227,37 +226,9 @@ function applyMove(target, effect) {
   noButton.style.left = `${target.x}px`;
   noButton.style.top = `${target.y}px`;
   noButton.style.transform = `rotate(${rotation}deg) scale(${scale})`;
-  noButton.style.boxShadow = effect === 'curve' ? '0 18px 34px rgba(93, 24, 66, .29)' : '';
-}
-
-function runRareDisappearance(target) {
-  specialEffectRunning = true;
-  noButton.style.opacity = '0.08';
-  noButton.style.transitionDuration = '250ms';
-  const hideTimer = setTimeout(() => {
-    noButton.style.visibility = 'hidden';
-    noButton.style.transition = 'none';
-    noButton.style.left = `${target.x}px`;
-    noButton.style.top = `${target.y}px`;
-    noButton.style.transform = 'scale(.82) rotate(0deg)';
-    void noButton.offsetWidth;
-
-    const reappearTimer = setTimeout(() => {
-      if (finished) return;
-      noButton.style.visibility = 'visible';
-      noButton.style.opacity = '0';
-      noButton.style.animation = 'reappear 360ms cubic-bezier(.2,.8,.25,1) both';
-      requestAnimationFrame(() => { noButton.style.opacity = '1'; });
-      const resetAnimationTimer = setTimeout(() => {
-        noButton.style.animation = '';
-        noButton.style.transition = '';
-        specialEffectRunning = false;
-      }, 380);
-      effectTimers.push(resetAnimationTimer);
-    }, randomBetween(220, 320));
-    effectTimers.push(reappearTimer);
-  }, 250);
-  effectTimers.push(hideTimer);
+  noButton.style.boxShadow = effect === 'curve' || effect === 'bounce'
+    ? '0 18px 34px rgba(93, 24, 66, .29)'
+    : '0 12px 24px rgba(93, 24, 66, .17)';
 }
 
 function showTemporaryPhrase() {
@@ -269,10 +240,11 @@ function showTemporaryPhrase() {
 }
 
 function dodgeNoButton(event) {
-  if (finished || specialEffectRunning) return false;
+  if (finished || specialEffectRunning || moveInProgress) return false;
   const now = performance.now();
   if (now - lastMoveAt < config.animation.cooldown) return false;
   lastMoveAt = now;
+  moveInProgress = true;
   attempts += 1;
   updateAttemptMessage();
   promoteToViewportPosition();
@@ -282,7 +254,9 @@ function dodgeNoButton(event) {
   const target = findSafePosition(pointer);
   const effect = pickEffect();
   applyMove(target, effect);
-  if (effect === 'vanish') runRareDisappearance(target);
+  // Do not allow another pointer event to queue a second escape while this
+  // one is still visible and moving. This is what makes the motion readable.
+  setTimeout(() => { moveInProgress = false; }, config.animation.moveDuration + 100);
   return true;
 }
 
@@ -431,11 +405,22 @@ window.addEventListener('pointermove', handlePointerMove, { passive: true });
 noButton.addEventListener('pointerenter', (event) => dodgeNoButton(event));
 noButton.addEventListener('mouseenter', (event) => dodgeNoButton(event));
 noButton.addEventListener('mouseover', (event) => dodgeNoButton(event));
-noButton.addEventListener('pointerdown', (event) => dodgeNoButton(event));
-noButton.addEventListener('touchstart', (event) => dodgeNoButton(event), { passive: true });
+noButton.addEventListener('pointerdown', (event) => {
+  // Cancel the native mouse/touch activation: the button should escape before
+  // a physical tap can turn into a click.
+  event.preventDefault();
+  dodgeNoButton(event);
+});
+noButton.addEventListener('touchstart', (event) => {
+  event.preventDefault();
+  dodgeNoButton(event);
+}, { passive: false });
 noButton.addEventListener('click', (event) => {
   event.preventDefault();
-  startFinalSequence('no');
+  // Keyboard activation remains a harmless fallback, while pointer/touch
+  // clicks are redirected into another visible escape.
+  if (event.detail === 0) startFinalSequence('no');
+  else dodgeNoButton(event);
 });
 yesButton.addEventListener('click', () => startFinalSequence('yes'));
 retryButton.addEventListener('click', resetQuestion);
