@@ -1,16 +1,16 @@
 # Sito romantico per Valentina
 
-Un piccolo sito romantico e giocoso dedicato a Valentina, costruito attorno alla domanda: “Valentina, ammetti che la timidona è soltanto una copertura?”. La pagina è interamente statica: non usa framework, server applicativi o dipendenze esterne.
+Un piccolo sito romantico e giocoso dedicato a Valentina, costruito attorno alla domanda: “Valentina, mi vuoi veramente bene?”. La pagina è interamente statica: non usa framework, server applicativi o dipendenze esterne.
 
 ## File
 
 - `index.html` — struttura, contenuti e accessibilità di base.
 - `style.css` — effetto vetro, palette romantica, layout responsive e animazioni.
-- `script.js` — configurazione personalizzabile, movimento fluido del pulsante “No” e finali romantici.
+- `script.js` — configurazione personalizzabile, movimento fluido del pulsante “Sì” e finali romantici.
 
-Il pulsante “No, assolutamente!” parte affiancato a “Sì 😏” e si sposta soltanto quando ci si avvicina o si prova a premerlo. Il primo movimento conserva la posizione iniziale, poi il pulsante scappa in una zona vicina e in direzione opposta al puntatore con transizioni tra 560 e 700 ms e un cooldown di 900 ms. Le destinazioni sono locali, non angoli casuali dello schermo: quando il puntatore raggiunge di nuovo il pulsante, questo continua a muoversi. Durante ogni fuga resta sempre visibile e non accetta il click del mouse o del touchscreen prima di essersi spostato. Dopo alcuni tentativi compaiono messaggi progressivi senza spostare il layout.
+Il pulsante “Sì, davvero ❤️” parte affiancato a “No” e si sposta soltanto quando ci si avvicina o si prova a premerlo. Il primo movimento conserva esattamente la posizione iniziale, poi il pulsante scappa in direzione opposta al puntatore con transizioni fluide e un breve cooldown. Resta sempre visibile, dentro lo schermo e lontano dal pulsante “No”. Dopo alcuni tentativi compaiono messaggi progressivi senza spostare il layout.
 
-La maggior parte delle fughe è fluida; più raramente vengono aggiunti una curva, un rimbalzo, una rotazione, un’ombra dinamica o una riduzione graduale. Non viene più usata la sparizione: l’effetto principale deve rimanere leggibile e il pulsante deve restare sullo schermo. Se il pulsante viene comunque attivato da tastiera, compare “Risposta sospetta…” con la possibilità di ripresentare la domanda. Premendo “Sì 😏” parte la rivelazione romantica con cuori, coriandoli e i messaggi finali personalizzati.
+Dal dodicesimo tentativo la fuga si accorcia e rallenta gradualmente; dopo il quindicesimo il pulsante diventa finalmente catturabile. Premendo “Sì” parte la rivelazione romantica con cuori, coriandoli e messaggi progressivi. “No” rimane sempre fermo e apre una finta schermata offesa, dalla quale si può ripristinare completamente il gioco.
 
 ## Prova locale
 
@@ -24,7 +24,7 @@ Poi visita <http://localhost:8000>.
 
 ## Personalizzazione
 
-Le variabili principali sono all’inizio di `script.js`: nome della ragazza, mittente, testi, frasi del pulsante “No”, soglie dei tentativi e intensità delle animazioni.
+Le variabili principali sono nell’oggetto `CONFIG` all’inizio di `script.js`: testi, frasi del pulsante “Sì”, soglie dei tentativi, distanze, tempi e messaggi dei due finali.
 
 ## Pubblicazione con GitHub Pages
 

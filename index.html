@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#f6d9e5" />
     <meta name="description" content="Un piccolo messaggio romantico per Valentina." />
     <title>Una domanda importante per Valentina</title>
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -17,34 +18,46 @@
       <section class="question-card glass-card" id="question-card" aria-labelledby="question-text">
         <p class="eyebrow"><span class="eyebrow-dot"></span> Una domanda importante</p>
         <div class="tiny-heart" aria-hidden="true">♡</div>
-        <h1 id="question-text">Valentina, ammetti che la timidona è soltanto una copertura?</h1>
+        <h1 id="question-text">Valentina, mi vuoi veramente bene?</h1>
         <p id="attempt-message" class="attempt-message" aria-live="polite"></p>
 
         <div class="button-row" id="button-row">
-          <button id="yes-btn" class="btn btn-yes" type="button">Sì 😏</button>
-          <button id="no-btn" class="btn btn-no" type="button">No, assolutamente!</button>
+          <button id="yes-btn" class="btn btn-yes" type="button">Sì, davvero ❤️</button>
+          <button id="no-btn" class="btn btn-no" type="button">No</button>
         </div>
-        <p class="microcopy">Scegli con il cuore. È più semplice così.</p>
+        <p class="microcopy">Rispondi con sincerità. Il sito terrà gli occhi aperti.</p>
       </section>
 
-      <section class="final-screen glass-card hidden" id="final-screen" aria-live="polite" aria-labelledby="final-title">
-        <div class="final-content">
-          <p class="eyebrow"><span class="eyebrow-dot"></span> La risposta del cuore</p>
-          <h2 id="final-title">Lo sapevo 😏</h2>
-          <p id="final-subtitle" class="final-subtitle">Confessione ufficialmente registrata.</p>
-          <div id="final-steps" class="final-steps"></div>
+      <section class="result-screen positive-screen glass-card hidden" id="positive-screen" aria-live="polite" aria-labelledby="positive-title">
+        <div class="result-content">
+          <p class="eyebrow"><span class="eyebrow-dot"></span> Risposta ufficiale</p>
+          <h2 id="positive-title">Finalmente! ❤️</h2>
+          <div id="positive-steps" class="result-steps"></div>
 
-          <div class="heart-stage" aria-label="Daniele e Valentina insieme">
+          <div class="heart-stage" aria-label="Un grande cuore per Valentina">
             <div class="heart-aura" aria-hidden="true"></div>
-            <div id="big-heart" aria-hidden="true">♥</div>
-            <p id="signature-line">Daniele <span aria-hidden="true">♥</span> Valentina</p>
+            <div class="big-heart" aria-hidden="true">♥</div>
           </div>
 
-          <p id="final-message" class="final-message hidden">Sono contento che tu l’abbia finalmente ammesso, ciccina ❤️</p>
-          <p id="playful-message" class="playful-message hidden">Adesso resta solo da scoprire fino a che punto arriva la parte birichina… chissà 😝</p>
-          <p id="final-closing" class="final-closing hidden">Il tuo ciccino aveva ragione.</p>
-          <p id="small-signature" class="small-signature hidden">Questo sito è stato creato apposta per te.</p>
-          <button id="retry-btn" class="btn btn-retry hidden" type="button">Riprova 😏</button>
+          <p id="positive-love" class="positive-love reveal-item hidden">Anch’io ti voglio davvero tanto bene ❤️</p>
+          <p id="positive-signature" class="positive-signature reveal-item hidden">Il tuo ciccino</p>
+        </div>
+      </section>
+
+      <section class="result-screen angry-screen glass-card hidden" id="angry-screen" aria-live="polite" aria-labelledby="angry-title">
+        <div class="result-content angry-content">
+          <p class="eyebrow"><span class="eyebrow-dot"></span> Reazione assolutamente composta</p>
+          <div class="storm-cloud" aria-hidden="true">☁</div>
+          <div class="broken-heart" aria-hidden="true">
+            <span class="heart-left">♥</span>
+            <span class="heart-right">♥</span>
+          </div>
+          <h2 id="angry-title">Ah.</h2>
+          <div id="angry-steps" class="result-steps angry-steps"></div>
+          <div id="angry-emoji" class="angry-emoji reveal-item hidden" aria-hidden="true">😒</div>
+          <p id="angry-closing" class="angry-closing reveal-item hidden">Sono ufficialmente offeso.</p>
+          <button id="retry-btn" class="btn btn-retry reveal-item hidden" type="button">Forse ho sbagliato risposta…</button>
+          <p id="angry-joke" class="angry-joke reveal-item hidden">Sto scherzando… ma riprova e stavolta pensaci bene.</p>
         </div>
       </section>
     </main>
